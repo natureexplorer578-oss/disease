@@ -1,29 +1,49 @@
 import streamlit as st
 import joblib
 import os
+import base64
 
-st.markdown(
-    """
+# ================= BACKGROUND IMAGE =================
+
+def set_bg():
+    with open("bg.jpg", "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    st.markdown(f"""
     <style>
-    .stApp {
-        background-image: url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3");
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{data}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    }}
 
-# Load models
+    /* Dark overlay */
+    .stApp::before {{
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: -1;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+set_bg()
+
+# ================= LOAD MODELS =================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 diabetes_model = joblib.load(os.path.join(BASE_DIR, "diabetes_model.pkl"))
 heart_model = joblib.load(os.path.join(BASE_DIR, "heart_model.pkl"))
 ckd_model = joblib.load(os.path.join(BASE_DIR, "ckd_model.pkl"))
 
-# Risk level function
+# ================= FUNCTION =================
+
 def risk_level(p):
     if p < 0.3:
         return "Low"
@@ -32,26 +52,24 @@ def risk_level(p):
     else:
         return "High"
 
-# UI Title
+# ================= UI =================
+
 st.title("🏥 Medical Report Analyzer")
 
-# ================= INPUTS =================
-
-# Diabetes inputs
+# Inputs
 glucose = st.number_input("Glucose")
 bmi = st.number_input("BMI")
 age = st.number_input("Age")
 
-# Heart inputs
 sex = st.number_input("Sex (0/1)")
 cp = st.number_input("Chest Pain (0-3)")
 trestbps = st.number_input("Blood Pressure")
+
 chol = st.number_input("Cholesterol")
 thalch = st.number_input("Heart Rate")
 oldpeak = st.number_input("Oldpeak")
 exang = st.number_input("Exercise Induced Angina (0/1)")
 
-# Kidney inputs
 bgr = st.number_input("Blood Glucose (CKD)")
 bu = st.number_input("Urea")
 sc = st.number_input("Creatinine")
@@ -61,36 +79,18 @@ hemo = st.number_input("Hemoglobin")
 
 if st.button("Analyze Report"):
 
-    # Diabetes (same as ipynb)
-    d_input = [[glucose, bmi, age]]
-    d_prob = diabetes_model.predict_proba(d_input)[0][1]
-
-    # Heart (same order as your ipynb)
-    h_input = [[
-        age, sex, cp,
-        trestbps, chol,
-        thalch, oldpeak,
-        exang
-    ]]
-    h_prob = heart_model.predict_proba(h_input)[0][1]
-
-    # Kidney (same as ipynb)
-    k_input = [[
-        age, trestbps, bgr,
-        bu, sc, hemo
-    ]]
-    k_prob = ckd_model.predict_proba(k_input)[0][1]
-
-    # ================= OUTPUT =================
-
-  if st.button("Analyze Report"):
-
-    # Predictions
     d_prob = diabetes_model.predict_proba([[glucose, bmi, age]])[0][1]
-    h_prob = heart_model.predict_proba([[age, sex, cp, trestbps, chol, thalch, oldpeak, exang]])[0][1]
-    k_prob = ckd_model.predict_proba([[age, trestbps, bgr, bu, sc, hemo]])[0][1]
 
-    # Result UI
+    h_prob = heart_model.predict_proba([[ 
+        age, sex, cp, trestbps, chol, thalch, oldpeak, exang 
+    ]])[0][1]
+
+    k_prob = ckd_model.predict_proba([[ 
+        age, trestbps, bgr, bu, sc, hemo 
+    ]])[0][1]
+
+    # ================= RESULT UI =================
+
     st.markdown(f"""
     <div style="
         background: rgba(0,0,0,0.75);
