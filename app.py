@@ -85,22 +85,33 @@ if st.button("Analyze Report"):
 
     st.subheader("🔍 Results")
 
-    st.markdown(f"""
+   st.markdown(f"""
 <div style="
-    background: rgba(0,0,0,0.7);
-    padding: 20px;
-    border-radius: 10px;
+    background: rgba(0,0,0,0.75);
+    padding: 25px;
+    border-radius: 15px;
     color: white;
     margin-top: 20px;
 ">
-    <h3>🩸 Diabetes</h3>
-    <p><b>Risk:</b> {risk_level(d_prob)}</p>
-    <p><b>Score:</b> {d_prob:.2f}</p>
 
-    <h3>❤️ Heart Disease</h3>
-    <p><b>Risk:</b> {risk_level(h_prob)}</p>
-    <p><b>Score:</b> {h_prob:.2f}</p>
+<h2 style="text-align:center;">🔍 Analysis Results</h2>
 
+<hr>
+
+<h3>🩸 Diabetes</h3>
+<p><b>Risk:</b> {risk_level(d_prob)}</p>
+<p><b>Score:</b> {d_prob:.2f}</p>
+
+<h3>❤️ Heart Disease</h3>
+<p><b>Risk:</b> {risk_level(h_prob)}</p>
+<p><b>Score:</b> {h_prob:.2f}</p>
+
+<h3>🧪 Kidney Disease</h3>
+<p><b>Risk:</b> {risk_level(k_prob)}</p>
+<p><b>Score:</b> {k_prob:.2f}</p>
+
+</div>
+""", unsafe_allow_html=True)
     <h3>🧪 Kidney Disease</h3>
     <p><b>Risk:</b> {risk_level(k_prob)}</p>
     <p><b>Score:</b> {k_prob:.2f}</p>
