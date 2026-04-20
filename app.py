@@ -1,17 +1,13 @@
-from flask import Flask, request, jsonify, render_template
+import streamlit as st
 import joblib
+import os
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Load models
-diabetes_model = joblib.load("diabetes_model.pkl")
-heart_model = joblib.load("heart_model.pkl")
-ckd_model = joblib.load("ckd_model.pkl")
+diabetes_model = joblib.load(os.path.join(BASE_DIR, "diabetes_model.pkl"))
+heart_model = joblib.load(os.path.join(BASE_DIR, "heart_model.pkl"))
+ckd_model = joblib.load(os.path.join(BASE_DIR, "ckd_model.pkl"))
 
-
-
-
-# Risk level
 def risk_level(p):
     if p < 0.3:
         return "Low"
@@ -20,40 +16,34 @@ def risk_level(p):
     else:
         return "High"
 
+st.title("🏥 Medical Report Analyzer")
 
-# ---------------- ROUTE FOR FRONTEND ----------------
-@app.route("/")
-def home():
-    return render_template("index.html")
+# Inputs
+glucose = st.number_input("Glucose")
+bmi = st.number_input("BMI")
+age = st.number_input("Age")
 
+sex = st.number_input("Sex (0/1)")
+cp = st.number_input("Chest Pain (0-3)")
+trestbps = st.number_input("Blood Pressure")
 
-# ---------------- MAIN PREDICTION ----------------
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.get_json(force=True)   # ✅ FIX 1
+chol = st.number_input("Cholesterol")
+thalch = st.number_input("Heart Rate")
+oldpeak = st.number_input("Oldpeak")
 
-    # Diabetes
-    d_input = [[data["glucose"], data["bmi"], data["age"]]]
-    d_prob = diabetes_model.predict_proba(d_input)[0][1]
+bgr = st.number_input("Blood Glucose (CKD)")
+bu = st.number_input("Urea")
+sc = st.number_input("Creatinine")
+hemo = st.number_input("Hemoglobin")
 
-    # Heart (✅ FIX 2: added exang)
-    h_input = [[
-        data["age"], data["sex"], data["cp"],
-        data["trestbps"], data["chol"],
-        data["thalch"], data["oldpeak"],
-        data["exang"]
-    ]]
-    h_prob = heart_model.predict_proba(h_input)[0][1]
+if st.button("Analyze Report"):
 
-    # Kidney
-    k_input = [[
-        data["age"], data["bp"], data["bgr"],
-        data["bu"], data["sc"], data["hemo"]
-    ]]
-    k_prob = ckd_model.predict_proba(k_input)[0][1]
+    d_prob = diabetes_model.predict_proba([[glucose, bmi, age]])[0][1]
+    h_prob = heart_model.predict_proba([[age, sex, cp, trestbps, chol, thalch, oldpeak]])[0][1]
+    k_prob = ckd_model.predict_proba([[age, trestbps, bgr, bu, sc, hemo]])[0][1]
 
-    return jsonify({
-        "diabetes": {"level": risk_level(d_prob), "score": d_prob},
-        "heart": {"level": risk_level(h_prob), "score": h_prob},
-        "ckd": {"level": risk_level(k_prob), "score": k_prob}
-    })
+    st.subheader("Results")
+
+    st.write(f"🩸 Diabetes: {risk_level(d_prob)} ({d_prob:.2f})")
+    st.write(f"❤️ Heart Disease: {risk_level(h_prob)} ({h_prob:.2f})")
+    st.write(f"🧪 Kidney Disease: {risk_level(k_prob)} ({k_prob:.2f})")
