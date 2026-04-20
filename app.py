@@ -19,23 +19,27 @@ def risk_level(p):
 st.title("🏥 Medical Report Analyzer")
 
 # Inputs
-glucose = st.number_input("Glucose")
-bmi = st.number_input("BMI")
-age = st.number_input("Age")
+ # Diabetes
+    d_input = [[data["glucose"], data["bmi"], data["age"]]]
+    d_prob = diabetes_model.predict_proba(d_input)[0][1]
 
-sex = st.number_input("Sex (0/1)")
-cp = st.number_input("Chest Pain (0-3)")
-trestbps = st.number_input("Blood Pressure")
+    # Heart (✅ FIX 2: added exang)
+    h_input = [[
+        data["age"], data["sex"], data["cp"],
+        data["trestbps"], data["chol"],
+        data["thalch"], data["oldpeak"],
+        data["exang"]
+    ]]
+    h_prob = heart_model.predict_proba(h_input)[0][1]
 
-chol = st.number_input("Cholesterol")
-thalch = st.number_input("Heart Rate")
-oldpeak = st.number_input("Oldpeak")
+    # Kidney
+    k_input = [[
+        data["age"], data["bp"], data["bgr"],
+        data["bu"], data["sc"], data["hemo"]
+    ]]
+    k_prob = ckd_model.predict_proba(k_input)[0][1]
 
-bgr = st.number_input("Blood Glucose (CKD)")
-bu = st.number_input("Urea")
-sc = st.number_input("Creatinine")
-hemo = st.number_input("Hemoglobin")
-
+   
 if st.button("Analyze Report"):
 
     d_prob = diabetes_model.predict_proba([[glucose, bmi, age]])[0][1]
