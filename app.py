@@ -57,6 +57,3 @@ def predict():
         "heart": {"level": risk_level(h_prob), "score": h_prob},
         "ckd": {"level": risk_level(k_prob), "score": k_prob}
     })
-
-if __name__ == "__main__":
-    app.run(debug=True)
