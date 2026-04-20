@@ -85,6 +85,24 @@ if st.button("Analyze Report"):
 
     st.subheader("🔍 Results")
 
-    st.success(f"🩸 Diabetes: {risk_level(d_prob)} ({d_prob:.2f})")
-    st.warning(f"❤️ Heart Disease: {risk_level(h_prob)} ({h_prob:.2f})")
-    st.error(f"🧪 Kidney Disease: {risk_level(k_prob)} ({k_prob:.2f})")
+    st.markdown(f"""
+<div style="
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    margin-top: 20px;
+">
+    <h3>🩸 Diabetes</h3>
+    <p><b>Risk:</b> {risk_level(d_prob)}</p>
+    <p><b>Score:</b> {d_prob:.2f}</p>
+
+    <h3>❤️ Heart Disease</h3>
+    <p><b>Risk:</b> {risk_level(h_prob)}</p>
+    <p><b>Score:</b> {h_prob:.2f}</p>
+
+    <h3>🧪 Kidney Disease</h3>
+    <p><b>Risk:</b> {risk_level(k_prob)}</p>
+    <p><b>Score:</b> {k_prob:.2f}</p>
+</div>
+""", unsafe_allow_html=True)
