@@ -2,19 +2,7 @@ import streamlit as st
 import joblib
 import os
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-image: url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 # Load models
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
